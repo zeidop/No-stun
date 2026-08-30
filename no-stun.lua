@@ -1,7 +1,6 @@
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -228,7 +227,7 @@ miniBtn.Visible = false
 miniBtn.Parent = screenGui
 
 local miniCorner = Instance.new("UICorner")
-miniCorner.CornerRadius = UDim.new(1, 0) -- Circular
+miniCorner.CornerRadius = UDim.new(1, 0)
 miniCorner.Parent = miniBtn
 
 local miniStroke = Instance.new("UIStroke")
@@ -236,6 +235,29 @@ miniStroke.Color = Color3.fromRGB(0, 0, 0)
 miniStroke.Thickness = 1.5
 miniStroke.Transparency = 0.3
 miniStroke.Parent = miniBtn
+
+-- ==================== BOTÓN DE SALTO EXTRA (NUEVO) ====================
+local jumpBtn = Instance.new("TextButton")
+jumpBtn.Name = "JumpButton"
+jumpBtn.Size = UDim2.new(0, 54, 0, 54)
+jumpBtn.Position = UDim2.new(0.75, 0, 0.72, 0) -- Posición inicial (abajo derecha)
+jumpBtn.BackgroundColor3 = Color3.fromRGB(80, 160, 255)
+jumpBtn.Text = "JUMP"
+jumpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+jumpBtn.TextSize = 13
+jumpBtn.Font = Enum.Font.GothamBold
+jumpBtn.BorderSizePixel = 0
+jumpBtn.Parent = screenGui
+
+local jumpBtnCorner = Instance.new("UICorner")
+jumpBtnCorner.CornerRadius = UDim.new(1, 0) -- Circular
+jumpBtnCorner.Parent = jumpBtn
+
+local jumpBtnStroke = Instance.new("UIStroke")
+jumpBtnStroke.Color = Color3.fromRGB(0, 0, 0)
+jumpBtnStroke.Thickness = 1.5
+jumpBtnStroke.Transparency = 0.3
+jumpBtnStroke.Parent = jumpBtn
 
 -- ==================== ARRASTRE ====================
 local function makeDraggable(guiObject)
@@ -268,6 +290,7 @@ end
 
 makeDraggable(mainFrame)
 makeDraggable(miniBtn)
+makeDraggable(jumpBtn) -- El botón de salto también es arrastrable
 
 -- ==================== LÓGICA ====================
 local function updateToggleVisual()
@@ -331,6 +354,11 @@ dashBtn.MouseButton1Click:Connect(function()
 	dash()
 end)
 
+-- Botón de salto extra
+jumpBtn.MouseButton1Click:Connect(function()
+	jump()
+end)
+
 -- Controles de teclado
 UserInputService.InputBegan:Connect(function(input, processed)
 	if processed then return end
@@ -356,4 +384,4 @@ RunService.Heartbeat:Connect(function()
 	end
 end)
 
-print("Anti-Stun Mobile + Dash cargado")
+print("Anti-Stun Mobile + Dash + Jump Button cargado")
