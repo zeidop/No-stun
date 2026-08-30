@@ -18,6 +18,8 @@ local locked = false
 local jumpBtnSize = 62
 local dashBtnSize = 62
 
+local originalSizes = {} -- Guarda tamaños originales de los enemigos
+
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:FindFirstChildOfClass("Humanoid")
 local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
@@ -51,24 +53,59 @@ local function dash()
 	root.Velocity = Vector3.new(lookVector.X * dashForce, root.Velocity.Y, lookVector.Z * dashForce)
 end
 
--- ==================== HIT REG FIX (seguro) ====================
+-- ==================== HIT REG FIX (enemigos) ====================
 local function applyHitReg()
-	if not hitRegEnabled or not character then return end
+	if not hitRegEnabled then return end
 
-	for _, part in pairs(character:GetDescendants()) do
-		if part:IsA("BasePart") then
-			local name = part.Name:lower()
-			if name:find("hitbox") or name:find("hurtbox") or name:find("hit") 
-				or name:find("damage") or name:find("punch") or name == "handle" then
-				
-				if not (name:find("root") or name:find("torso") or name:find("head") or name:find("humanoid")) then
-					part.Size = Vector3.new(hitReg, hitReg, hitReg)
-					part.CanCollide = false
-					part.Massless = true
-				end
+	for _, plr in pairs(Players:GetPlayers()) do
+		if plr \~= player and plr.Character then
+			local char = plr.Character
+			local hrp = char:FindFirstChild("HumanoidRootPart")
+			local head = char:FindFirstChild("Head")
+			local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
+
+			-- Guardar tamaño original solo la primera vez
+			if hrp and not originalSizes[hrp] then
+				originalSizes[hrp] = hrp.Size
+			end
+			if head and not originalSizes[head] then
+				originalSizes[head] = head.Size
+			end
+			if torso and not originalSizes[torso] then
+				originalSizes[torso] = torso.Size
+			end
+
+			-- Aplicar tamaño
+			if hrp then
+				hrp.Size = Vector3.new(hitReg, hitReg, hitReg)
+				hrp.Transparency = 0.7
+				hrp.CanCollide = false
+				hrp.Massless = true
+			end
+			if head then
+				head.Size = Vector3.new(hitReg * 0.7, hitReg * 0.7, hitReg * 0.7)
+				head.CanCollide = false
+				head.Massless = true
+			end
+			if torso then
+				torso.Size = Vector3.new(hitReg * 0.8, hitReg * 0.8, hitReg * 0.8)
+				torso.CanCollide = false
+				torso.Massless = true
 			end
 		end
 	end
+end
+
+local function restoreHitReg()
+	for part, size in pairs(originalSizes) do
+		if part and part.Parent then
+			part.Size = size
+			part.Transparency = 0
+			part.CanCollide = true
+			part.Massless = false
+		end
+	end
+	originalSizes = {}
 end
 
 -- ==================== GUI ====================
@@ -555,6 +592,8 @@ hitRegToggle.MouseButton1Click:Connect(function()
 	updateHitRegVisual()
 	if hitRegEnabled then
 		applyHitReg()
+	else
+		restoreHitReg()
 	end
 end)
 
@@ -678,13 +717,14 @@ RunService.Heartbeat:Connect(function()
 	end
 end)
 
+-- Aplica Hit Reg cada 0.4 segundos mientras esté activado
 task.spawn(function()
 	while true do
-		task.wait(0.5)
+		task.wait(0.4)
 		if hitRegEnabled then
 			applyHitReg()
 		end
 	end
 end)
 
-print("Anti-Stun Mobile + Hit Reg Fix (seguro) cargado")
+print("Anti-Stun Mobile + Hit Reg Fix (enemigos) cargado")
