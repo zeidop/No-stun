@@ -5,20 +5,18 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- ==================== VALORES ====================
 local enabled = false
 local jumping = true
 local jumpPower = 50
 local dashForce = 60
 local hitRegEnabled = false
-local hitReg = 5
+local hitReg = 8
 local minimized = false
 local locked = false
 
 local jumpBtnSize = 62
 local dashBtnSize = 62
-
-local originalSizes = {} -- Guarda tamaños originales de los enemigos
+local originalSizes = {}
 
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:FindFirstChildOfClass("Humanoid")
@@ -31,7 +29,6 @@ player.CharacterAdded:Connect(function(c)
 	jumping = true
 end)
 
--- ==================== FUNCIÓN DE SALTO ====================
 local function jump()
 	if not humanoid or not root or not jumping then return end
 	jumping = false
@@ -46,51 +43,26 @@ local function jump()
 	jumping = true
 end
 
--- ==================== FUNCIÓN DE DASH ====================
 local function dash()
 	if not humanoid or not root then return end
 	local lookVector = root.CFrame.LookVector
 	root.Velocity = Vector3.new(lookVector.X * dashForce, root.Velocity.Y, lookVector.Z * dashForce)
 end
 
--- ==================== HIT REG FIX (enemigos) ====================
 local function applyHitReg()
 	if not hitRegEnabled then return end
-
 	for _, plr in pairs(Players:GetPlayers()) do
 		if plr \~= player and plr.Character then
 			local char = plr.Character
 			local hrp = char:FindFirstChild("HumanoidRootPart")
-			local head = char:FindFirstChild("Head")
-			local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
-
-			-- Guardar tamaño original solo la primera vez
-			if hrp and not originalSizes[hrp] then
-				originalSizes[hrp] = hrp.Size
-			end
-			if head and not originalSizes[head] then
-				originalSizes[head] = head.Size
-			end
-			if torso and not originalSizes[torso] then
-				originalSizes[torso] = torso.Size
-			end
-
-			-- Aplicar tamaño
 			if hrp then
+				if not originalSizes[hrp] then
+					originalSizes[hrp] = hrp.Size
+				end
 				hrp.Size = Vector3.new(hitReg, hitReg, hitReg)
-				hrp.Transparency = 0.7
+				hrp.Transparency = 0.65
 				hrp.CanCollide = false
 				hrp.Massless = true
-			end
-			if head then
-				head.Size = Vector3.new(hitReg * 0.7, hitReg * 0.7, hitReg * 0.7)
-				head.CanCollide = false
-				head.Massless = true
-			end
-			if torso then
-				torso.Size = Vector3.new(hitReg * 0.8, hitReg * 0.8, hitReg * 0.8)
-				torso.CanCollide = false
-				torso.Massless = true
 			end
 		end
 	end
@@ -108,7 +80,6 @@ local function restoreHitReg()
 	originalSizes = {}
 end
 
--- ==================== GUI ====================
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "AntiStunMobile"
 screenGui.ResetOnSpawn = false
@@ -173,7 +144,6 @@ local toggleCorner = Instance.new("UICorner")
 toggleCorner.CornerRadius = UDim.new(0, 8)
 toggleCorner.Parent = toggleBtn
 
--- ===== JUMP POWER + GENERADOR =====
 local jumpLabel = Instance.new("TextLabel")
 jumpLabel.Size = UDim2.new(1, -16, 0, 18)
 jumpLabel.Position = UDim2.new(0, 8, 0, 78)
@@ -228,7 +198,6 @@ local generateJumpCorner = Instance.new("UICorner")
 generateJumpCorner.CornerRadius = UDim.new(0, 6)
 generateJumpCorner.Parent = generateJumpBtn
 
--- ===== DASH FORCE + GENERADOR =====
 local dashLabel = Instance.new("TextLabel")
 dashLabel.Size = UDim2.new(1, -16, 0, 18)
 dashLabel.Position = UDim2.new(0, 8, 0, 132)
@@ -283,7 +252,6 @@ local generateDashCorner = Instance.new("UICorner")
 generateDashCorner.CornerRadius = UDim.new(0, 6)
 generateDashCorner.Parent = generateDashBtn
 
--- ===== JUMP SIZE =====
 local jumpSizeLabel = Instance.new("TextLabel")
 jumpSizeLabel.Size = UDim2.new(1, -16, 0, 18)
 jumpSizeLabel.Position = UDim2.new(0, 8, 0, 188)
@@ -324,7 +292,6 @@ local jumpSizeCorner2 = Instance.new("UICorner")
 jumpSizeCorner2.CornerRadius = UDim.new(0, 6)
 jumpSizeCorner2.Parent = jumpSizePlus
 
--- ===== DASH SIZE =====
 local dashSizeLabel = Instance.new("TextLabel")
 dashSizeLabel.Size = UDim2.new(1, -16, 0, 18)
 dashSizeLabel.Position = UDim2.new(0, 8, 0, 242)
@@ -365,7 +332,6 @@ local dashSizeCorner2 = Instance.new("UICorner")
 dashSizeCorner2.CornerRadius = UDim.new(0, 6)
 dashSizeCorner2.Parent = dashSizePlus
 
--- ===== HIT REG FIX (INTERRUPTOR) =====
 local hitRegToggle = Instance.new("TextButton")
 hitRegToggle.Size = UDim2.new(1, -16, 0, 32)
 hitRegToggle.Position = UDim2.new(0, 8, 0, 296)
@@ -385,7 +351,7 @@ local hitRegLabel = Instance.new("TextLabel")
 hitRegLabel.Size = UDim2.new(1, -16, 0, 18)
 hitRegLabel.Position = UDim2.new(0, 8, 0, 334)
 hitRegLabel.BackgroundTransparency = 1
-hitRegLabel.Text = "Hit Reg Value: 5"
+hitRegLabel.Text = "Hit Reg Value: 8"
 hitRegLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
 hitRegLabel.TextSize = 12
 hitRegLabel.Font = Enum.Font.Gotham
@@ -421,7 +387,6 @@ local hitRegCorner2 = Instance.new("UICorner")
 hitRegCorner2.CornerRadius = UDim.new(0, 6)
 hitRegCorner2.Parent = hitRegPlus
 
--- ===== LOCK =====
 local lockBtn = Instance.new("TextButton")
 lockBtn.Size = UDim2.new(1, -16, 0, 28)
 lockBtn.Position = UDim2.new(0, 8, 0, 390)
@@ -437,7 +402,6 @@ local lockCorner = Instance.new("UICorner")
 lockCorner.CornerRadius = UDim.new(0, 7)
 lockCorner.Parent = lockBtn
 
--- ==================== BOTÓN MINIMIZADO ====================
 local miniBtn = Instance.new("TextButton")
 miniBtn.Name = "MiniButton"
 miniBtn.Size = UDim2.new(0, 48, 0, 48)
@@ -461,7 +425,6 @@ miniStroke.Thickness = 1.5
 miniStroke.Transparency = 0.3
 miniStroke.Parent = miniBtn
 
--- ==================== BOTÓN JUMP FLOTANTE ====================
 local jumpBtn = Instance.new("TextButton")
 jumpBtn.Name = "JumpButton"
 jumpBtn.Size = UDim2.new(0, jumpBtnSize, 0, jumpBtnSize)
@@ -484,7 +447,6 @@ jumpBtnStroke.Color = Color3.fromRGB(80, 80, 80)
 jumpBtnStroke.Thickness = 1.8
 jumpBtnStroke.Parent = jumpBtn
 
--- ==================== BOTÓN DASH FLOTANTE ====================
 local dashFloatBtn = Instance.new("TextButton")
 dashFloatBtn.Name = "DashButton"
 dashFloatBtn.Size = UDim2.new(0, dashBtnSize, 0, dashBtnSize)
@@ -508,7 +470,6 @@ dashFloatStroke.Thickness = 1.5
 dashFloatStroke.Transparency = 0.3
 dashFloatStroke.Parent = dashFloatBtn
 
--- ==================== ARRASTRE ====================
 local function makeDraggable(guiObject, isFloating)
 	local dragging = false
 	local dragStart, startPos
@@ -531,10 +492,7 @@ local function makeDraggable(guiObject, isFloating)
 		if locked and isFloating then return end
 		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
 			local delta = input.Position - dragStart
-			guiObject.Position = UDim2.new(
-				startPos.X.Scale, startPos.X.Offset + delta.X,
-				startPos.Y.Scale, startPos.Y.Offset + delta.Y
-			)
+			guiObject.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 		end
 	end)
 end
@@ -544,7 +502,6 @@ makeDraggable(miniBtn, false)
 makeDraggable(jumpBtn, true)
 makeDraggable(dashFloatBtn, true)
 
--- ==================== LÓGICA ====================
 local function updateToggleVisual()
 	if enabled then
 		toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 180, 80)
@@ -634,17 +591,13 @@ end)
 hitRegMinus.MouseButton1Click:Connect(function()
 	hitReg = math.max(1, hitReg - 1)
 	hitRegLabel.Text = "Hit Reg Value: " .. hitReg
-	if hitRegEnabled then
-		applyHitReg()
-	end
+	if hitRegEnabled then applyHitReg() end
 end)
 
 hitRegPlus.MouseButton1Click:Connect(function()
 	hitReg = math.min(100, hitReg + 1)
 	hitRegLabel.Text = "Hit Reg Value: " .. hitReg
-	if hitRegEnabled then
-		applyHitReg()
-	end
+	if hitRegEnabled then applyHitReg() end
 end)
 
 jumpSizeMinus.MouseButton1Click:Connect(function()
@@ -710,14 +663,11 @@ end)
 RunService.Heartbeat:Connect(function()
 	if not enabled or not humanoid or not jumping then return end
 	local state = humanoid:GetState()
-	if state == Enum.HumanoidStateType.FallingDown
-		or state == Enum.HumanoidStateType.GettingUp
-		or state == Enum.HumanoidStateType.Stunned then
+	if state == Enum.HumanoidStateType.FallingDown or state == Enum.HumanoidStateType.GettingUp or state == Enum.HumanoidStateType.Stunned then
 		jump()
 	end
 end)
 
--- Aplica Hit Reg cada 0.4 segundos mientras esté activado
 task.spawn(function()
 	while true do
 		task.wait(0.4)
@@ -727,4 +677,4 @@ task.spawn(function()
 	end
 end)
 
-print("Anti-Stun Mobile + Hit Reg Fix (enemigos) cargado")
+print("Anti-Stun Mobile + Hit Reg Fix cargado correctamente")
