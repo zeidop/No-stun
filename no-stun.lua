@@ -9,14 +9,11 @@ local enabled = false
 local jumping = true
 local jumpPower = 50
 local dashForce = 60
-local hitRegEnabled = false
-local hitReg = 8
 local minimized = false
 local locked = false
 
 local jumpBtnSize = 62
 local dashBtnSize = 62
-local originalSizes = {}
 
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:FindFirstChildOfClass("Humanoid")
@@ -49,37 +46,6 @@ local function dash()
 	root.Velocity = Vector3.new(lookVector.X * dashForce, root.Velocity.Y, lookVector.Z * dashForce)
 end
 
-local function applyHitReg()
-	if not hitRegEnabled then return end
-	for _, plr in pairs(Players:GetPlayers()) do
-		if plr \~= player and plr.Character then
-			local char = plr.Character
-			local hrp = char:FindFirstChild("HumanoidRootPart")
-			if hrp then
-				if not originalSizes[hrp] then
-					originalSizes[hrp] = hrp.Size
-				end
-				hrp.Size = Vector3.new(hitReg, hitReg, hitReg)
-				hrp.Transparency = 0.65
-				hrp.CanCollide = false
-				hrp.Massless = true
-			end
-		end
-	end
-end
-
-local function restoreHitReg()
-	for part, size in pairs(originalSizes) do
-		if part and part.Parent then
-			part.Size = size
-			part.Transparency = 0
-			part.CanCollide = true
-			part.Massless = false
-		end
-	end
-	originalSizes = {}
-end
-
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "AntiStunMobile"
 screenGui.ResetOnSpawn = false
@@ -88,8 +54,8 @@ screenGui.Parent = playerGui
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 170, 0, 400)
-mainFrame.Position = UDim2.new(0.03, 0, 0.16, 0)
+mainFrame.Size = UDim2.new(0, 170, 0, 320)
+mainFrame.Position = UDim2.new(0.03, 0, 0.22, 0)
 mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
@@ -332,64 +298,9 @@ local dashSizeCorner2 = Instance.new("UICorner")
 dashSizeCorner2.CornerRadius = UDim.new(0, 6)
 dashSizeCorner2.Parent = dashSizePlus
 
-local hitRegToggle = Instance.new("TextButton")
-hitRegToggle.Size = UDim2.new(1, -16, 0, 32)
-hitRegToggle.Position = UDim2.new(0, 8, 0, 296)
-hitRegToggle.BackgroundColor3 = Color3.fromRGB(160, 70, 30)
-hitRegToggle.Text = "Hit Reg Fix: OFF"
-hitRegToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-hitRegToggle.TextSize = 13
-hitRegToggle.Font = Enum.Font.GothamBold
-hitRegToggle.BorderSizePixel = 0
-hitRegToggle.Parent = mainFrame
-
-local hitRegToggleCorner = Instance.new("UICorner")
-hitRegToggleCorner.CornerRadius = UDim.new(0, 8)
-hitRegToggleCorner.Parent = hitRegToggle
-
-local hitRegLabel = Instance.new("TextLabel")
-hitRegLabel.Size = UDim2.new(1, -16, 0, 18)
-hitRegLabel.Position = UDim2.new(0, 8, 0, 334)
-hitRegLabel.BackgroundTransparency = 1
-hitRegLabel.Text = "Hit Reg Value: 8"
-hitRegLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
-hitRegLabel.TextSize = 12
-hitRegLabel.Font = Enum.Font.Gotham
-hitRegLabel.TextXAlignment = Enum.TextXAlignment.Left
-hitRegLabel.Parent = mainFrame
-
-local hitRegMinus = Instance.new("TextButton")
-hitRegMinus.Size = UDim2.new(0, 32, 0, 26)
-hitRegMinus.Position = UDim2.new(0, 8, 0, 354)
-hitRegMinus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-hitRegMinus.Text = "-"
-hitRegMinus.TextColor3 = Color3.fromRGB(255, 255, 255)
-hitRegMinus.TextSize = 16
-hitRegMinus.Font = Enum.Font.GothamBold
-hitRegMinus.BorderSizePixel = 0
-hitRegMinus.Parent = mainFrame
-
-local hitRegPlus = Instance.new("TextButton")
-hitRegPlus.Size = UDim2.new(0, 32, 0, 26)
-hitRegPlus.Position = UDim2.new(0, 44, 0, 354)
-hitRegPlus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-hitRegPlus.Text = "+"
-hitRegPlus.TextColor3 = Color3.fromRGB(255, 255, 255)
-hitRegPlus.TextSize = 16
-hitRegPlus.Font = Enum.Font.GothamBold
-hitRegPlus.BorderSizePixel = 0
-hitRegPlus.Parent = mainFrame
-
-local hitRegCorner1 = Instance.new("UICorner")
-hitRegCorner1.CornerRadius = UDim.new(0, 6)
-hitRegCorner1.Parent = hitRegMinus
-local hitRegCorner2 = Instance.new("UICorner")
-hitRegCorner2.CornerRadius = UDim.new(0, 6)
-hitRegCorner2.Parent = hitRegPlus
-
 local lockBtn = Instance.new("TextButton")
-lockBtn.Size = UDim2.new(1, -16, 0, 28)
-lockBtn.Position = UDim2.new(0, 8, 0, 390)
+lockBtn.Size = UDim2.new(1, -16, 0, 30)
+lockBtn.Position = UDim2.new(0, 8, 0, 298)
 lockBtn.BackgroundColor3 = Color3.fromRGB(90, 90, 100)
 lockBtn.Text = "LOCK: OFF"
 lockBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -405,7 +316,7 @@ lockCorner.Parent = lockBtn
 local miniBtn = Instance.new("TextButton")
 miniBtn.Name = "MiniButton"
 miniBtn.Size = UDim2.new(0, 48, 0, 48)
-miniBtn.Position = UDim2.new(0.03, 0, 0.16, 0)
+miniBtn.Position = UDim2.new(0.03, 0, 0.22, 0)
 miniBtn.BackgroundColor3 = Color3.fromRGB(200, 55, 55)
 miniBtn.Text = "AS"
 miniBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -514,16 +425,6 @@ local function updateToggleVisual()
 	end
 end
 
-local function updateHitRegVisual()
-	if hitRegEnabled then
-		hitRegToggle.BackgroundColor3 = Color3.fromRGB(50, 180, 80)
-		hitRegToggle.Text = "Hit Reg Fix: ON"
-	else
-		hitRegToggle.BackgroundColor3 = Color3.fromRGB(160, 70, 30)
-		hitRegToggle.Text = "Hit Reg Fix: OFF"
-	end
-end
-
 local function setEnabled(state)
 	enabled = state
 	jumping = true
@@ -542,16 +443,6 @@ end
 
 toggleBtn.MouseButton1Click:Connect(function()
 	setEnabled(not enabled)
-end)
-
-hitRegToggle.MouseButton1Click:Connect(function()
-	hitRegEnabled = not hitRegEnabled
-	updateHitRegVisual()
-	if hitRegEnabled then
-		applyHitReg()
-	else
-		restoreHitReg()
-	end
 end)
 
 minBtn.MouseButton1Click:Connect(function()
@@ -586,18 +477,6 @@ end)
 dashPlus.MouseButton1Click:Connect(function()
 	dashForce = math.min(150, dashForce + 5)
 	dashLabel.Text = "Dash Force: " .. dashForce
-end)
-
-hitRegMinus.MouseButton1Click:Connect(function()
-	hitReg = math.max(1, hitReg - 1)
-	hitRegLabel.Text = "Hit Reg Value: " .. hitReg
-	if hitRegEnabled then applyHitReg() end
-end)
-
-hitRegPlus.MouseButton1Click:Connect(function()
-	hitReg = math.min(100, hitReg + 1)
-	hitRegLabel.Text = "Hit Reg Value: " .. hitReg
-	if hitRegEnabled then applyHitReg() end
 end)
 
 jumpSizeMinus.MouseButton1Click:Connect(function()
@@ -668,13 +547,4 @@ RunService.Heartbeat:Connect(function()
 	end
 end)
 
-task.spawn(function()
-	while true do
-		task.wait(0.4)
-		if hitRegEnabled then
-			applyHitReg()
-		end
-	end
-end)
-
-print("Anti-Stun Mobile + Hit Reg Fix cargado correctamente")
+print("Anti-Stun Mobile cargado correctamente")
