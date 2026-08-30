@@ -10,13 +10,13 @@ local enabled = false
 local jumping = true
 local jumpPower = 50
 local dashForce = 60
-local hitboxRange = 5          -- Valor predeterminado
+local hitReg = 5
 local minimized = false
 local locked = false
 
 local jumpBtnSize = 62
 local dashBtnSize = 62
-local hitboxBtnSize = 62
+local hitRegBtnSize = 62
 
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:FindFirstChildOfClass("Humanoid")
@@ -51,28 +51,27 @@ local function dash()
 	root.Velocity = Vector3.new(lookVector.X * dashForce, root.Velocity.Y, lookVector.Z * dashForce)
 end
 
--- ==================== FUNCIÓN DE HITBOX ====================
-local function applyHitbox()
+-- ==================== FUNCIÓN HIT REG FIX ====================
+local function applyHitReg()
 	if not character or not root then return end
 
-	-- Busca partes de hitbox existentes en el personaje y las escala
 	for _, part in pairs(character:GetDescendants()) do
 		if part:IsA("BasePart") then
 			local name = part.Name:lower()
-			if name:find("hitbox") or name:find("hurtbox") or name:find("hit") or name:find("damage") then
-				part.Size = Vector3.new(hitboxRange, hitboxRange, hitboxRange)
+			if name:find("hitbox") or name:find("hurtbox") or name:find("hit") or name:find("damage") or name:find("punch") then
+				part.Size = Vector3.new(hitReg, hitReg, hitReg)
 			end
 		end
 	end
 
-	-- Fallback: crea una hitbox invisible temporal si no encuentra ninguna
-	local existing = character:FindFirstChild("CustomHitbox")
+	local existing = character:FindFirstChild("HitRegFix")
 	if existing then
-		existing.Size = Vector3.new(hitboxRange, hitboxRange, hitboxRange)
+		existing.Size = Vector3.new(hitReg, hitReg, hitReg)
+		existing.CFrame = root.CFrame
 	else
 		local hitbox = Instance.new("Part")
-		hitbox.Name = "CustomHitbox"
-		hitbox.Size = Vector3.new(hitboxRange, hitboxRange, hitboxRange)
+		hitbox.Name = "HitRegFix"
+		hitbox.Size = Vector3.new(hitReg, hitReg, hitReg)
 		hitbox.Transparency = 1
 		hitbox.CanCollide = false
 		hitbox.Massless = true
@@ -95,10 +94,9 @@ screenGui.ResetOnSpawn = false
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.Parent = playerGui
 
--- Frame principal
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 170, 0, 390)
+mainFrame.Size = UDim2.new(0, 170, 0, 380)
 mainFrame.Position = UDim2.new(0.03, 0, 0.18, 0)
 mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
 mainFrame.BorderSizePixel = 0
@@ -113,7 +111,6 @@ mainStroke.Color = Color3.fromRGB(60, 60, 70)
 mainStroke.Thickness = 1.2
 mainStroke.Parent = mainFrame
 
--- Título
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, -30, 0, 28)
 title.Position = UDim2.new(0, 8, 0, 4)
@@ -125,7 +122,6 @@ title.Font = Enum.Font.GothamBold
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = mainFrame
 
--- Botón Minimizar
 local minBtn = Instance.new("TextButton")
 minBtn.Size = UDim2.new(0, 24, 0, 24)
 minBtn.Position = UDim2.new(1, -28, 0, 4)
@@ -141,7 +137,6 @@ local minCorner = Instance.new("UICorner")
 minCorner.CornerRadius = UDim.new(0, 6)
 minCorner.Parent = minBtn
 
--- Botón Toggle
 local toggleBtn = Instance.new("TextButton")
 toggleBtn.Size = UDim2.new(1, -16, 0, 34)
 toggleBtn.Position = UDim2.new(0, 8, 0, 36)
@@ -267,65 +262,10 @@ local generateDashCorner = Instance.new("UICorner")
 generateDashCorner.CornerRadius = UDim.new(0, 6)
 generateDashCorner.Parent = generateDashBtn
 
--- ===== HITBOX RANGE + GENERADOR =====
-local hitboxLabel = Instance.new("TextLabel")
-hitboxLabel.Size = UDim2.new(1, -16, 0, 18)
-hitboxLabel.Position = UDim2.new(0, 8, 0, 186)
-hitboxLabel.BackgroundTransparency = 1
-hitboxLabel.Text = "Hitbox Range: 5"
-hitboxLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
-hitboxLabel.TextSize = 12
-hitboxLabel.Font = Enum.Font.Gotham
-hitboxLabel.TextXAlignment = Enum.TextXAlignment.Left
-hitboxLabel.Parent = mainFrame
-
-local hitboxMinus = Instance.new("TextButton")
-hitboxMinus.Size = UDim2.new(0, 32, 0, 26)
-hitboxMinus.Position = UDim2.new(0, 8, 0, 206)
-hitboxMinus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-hitboxMinus.Text = "-"
-hitboxMinus.TextColor3 = Color3.fromRGB(255, 255, 255)
-hitboxMinus.TextSize = 16
-hitboxMinus.Font = Enum.Font.GothamBold
-hitboxMinus.BorderSizePixel = 0
-hitboxMinus.Parent = mainFrame
-
-local hitboxPlus = Instance.new("TextButton")
-hitboxPlus.Size = UDim2.new(0, 32, 0, 26)
-hitboxPlus.Position = UDim2.new(0, 44, 0, 206)
-hitboxPlus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-hitboxPlus.Text = "+"
-hitboxPlus.TextColor3 = Color3.fromRGB(255, 255, 255)
-hitboxPlus.TextSize = 16
-hitboxPlus.Font = Enum.Font.GothamBold
-hitboxPlus.BorderSizePixel = 0
-hitboxPlus.Parent = mainFrame
-
-local generateHitboxBtn = Instance.new("TextButton")
-generateHitboxBtn.Size = UDim2.new(0, 70, 0, 26)
-generateHitboxBtn.Position = UDim2.new(0, 84, 0, 206)
-generateHitboxBtn.BackgroundColor3 = Color3.fromRGB(180, 80, 40)
-generateHitboxBtn.Text = "HITBOX"
-generateHitboxBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-generateHitboxBtn.TextSize = 11
-generateHitboxBtn.Font = Enum.Font.GothamBold
-generateHitboxBtn.BorderSizePixel = 0
-generateHitboxBtn.Parent = mainFrame
-
-local hitboxCorner1 = Instance.new("UICorner")
-hitboxCorner1.CornerRadius = UDim.new(0, 6)
-hitboxCorner1.Parent = hitboxMinus
-local hitboxCorner2 = Instance.new("UICorner")
-hitboxCorner2.CornerRadius = UDim.new(0, 6)
-hitboxCorner2.Parent = hitboxPlus
-local generateHitboxCorner = Instance.new("UICorner")
-generateHitboxCorner.CornerRadius = UDim.new(0, 6)
-generateHitboxCorner.Parent = generateHitboxBtn
-
 -- ===== JUMP SIZE =====
 local jumpSizeLabel = Instance.new("TextLabel")
 jumpSizeLabel.Size = UDim2.new(1, -16, 0, 18)
-jumpSizeLabel.Position = UDim2.new(0, 8, 0, 242)
+jumpSizeLabel.Position = UDim2.new(0, 8, 0, 188)
 jumpSizeLabel.BackgroundTransparency = 1
 jumpSizeLabel.Text = "Jump Size: 62"
 jumpSizeLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
@@ -336,7 +276,7 @@ jumpSizeLabel.Parent = mainFrame
 
 local jumpSizeMinus = Instance.new("TextButton")
 jumpSizeMinus.Size = UDim2.new(0, 32, 0, 26)
-jumpSizeMinus.Position = UDim2.new(0, 8, 0, 262)
+jumpSizeMinus.Position = UDim2.new(0, 8, 0, 208)
 jumpSizeMinus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 jumpSizeMinus.Text = "-"
 jumpSizeMinus.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -347,7 +287,7 @@ jumpSizeMinus.Parent = mainFrame
 
 local jumpSizePlus = Instance.new("TextButton")
 jumpSizePlus.Size = UDim2.new(0, 32, 0, 26)
-jumpSizePlus.Position = UDim2.new(0, 44, 0, 262)
+jumpSizePlus.Position = UDim2.new(0, 44, 0, 208)
 jumpSizePlus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 jumpSizePlus.Text = "+"
 jumpSizePlus.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -366,7 +306,7 @@ jumpSizeCorner2.Parent = jumpSizePlus
 -- ===== DASH SIZE =====
 local dashSizeLabel = Instance.new("TextLabel")
 dashSizeLabel.Size = UDim2.new(1, -16, 0, 18)
-dashSizeLabel.Position = UDim2.new(0, 8, 0, 296)
+dashSizeLabel.Position = UDim2.new(0, 8, 0, 242)
 dashSizeLabel.BackgroundTransparency = 1
 dashSizeLabel.Text = "Dash Size: 62"
 dashSizeLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
@@ -377,7 +317,7 @@ dashSizeLabel.Parent = mainFrame
 
 local dashSizeMinus = Instance.new("TextButton")
 dashSizeMinus.Size = UDim2.new(0, 32, 0, 26)
-dashSizeMinus.Position = UDim2.new(0, 8, 0, 316)
+dashSizeMinus.Position = UDim2.new(0, 8, 0, 262)
 dashSizeMinus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 dashSizeMinus.Text = "-"
 dashSizeMinus.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -388,7 +328,7 @@ dashSizeMinus.Parent = mainFrame
 
 local dashSizePlus = Instance.new("TextButton")
 dashSizePlus.Size = UDim2.new(0, 32, 0, 26)
-dashSizePlus.Position = UDim2.new(0, 44, 0, 316)
+dashSizePlus.Position = UDim2.new(0, 44, 0, 262)
 dashSizePlus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 dashSizePlus.Text = "+"
 dashSizePlus.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -404,10 +344,65 @@ local dashSizeCorner2 = Instance.new("UICorner")
 dashSizeCorner2.CornerRadius = UDim.new(0, 6)
 dashSizeCorner2.Parent = dashSizePlus
 
+-- ===== HIT REG FIX =====
+local hitRegLabel = Instance.new("TextLabel")
+hitRegLabel.Size = UDim2.new(1, -16, 0, 18)
+hitRegLabel.Position = UDim2.new(0, 8, 0, 296)
+hitRegLabel.BackgroundTransparency = 1
+hitRegLabel.Text = "Hit Reg Fix: 5"
+hitRegLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+hitRegLabel.TextSize = 12
+hitRegLabel.Font = Enum.Font.Gotham
+hitRegLabel.TextXAlignment = Enum.TextXAlignment.Left
+hitRegLabel.Parent = mainFrame
+
+local hitRegMinus = Instance.new("TextButton")
+hitRegMinus.Size = UDim2.new(0, 32, 0, 26)
+hitRegMinus.Position = UDim2.new(0, 8, 0, 316)
+hitRegMinus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+hitRegMinus.Text = "-"
+hitRegMinus.TextColor3 = Color3.fromRGB(255, 255, 255)
+hitRegMinus.TextSize = 16
+hitRegMinus.Font = Enum.Font.GothamBold
+hitRegMinus.BorderSizePixel = 0
+hitRegMinus.Parent = mainFrame
+
+local hitRegPlus = Instance.new("TextButton")
+hitRegPlus.Size = UDim2.new(0, 32, 0, 26)
+hitRegPlus.Position = UDim2.new(0, 44, 0, 316)
+hitRegPlus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+hitRegPlus.Text = "+"
+hitRegPlus.TextColor3 = Color3.fromRGB(255, 255, 255)
+hitRegPlus.TextSize = 16
+hitRegPlus.Font = Enum.Font.GothamBold
+hitRegPlus.BorderSizePixel = 0
+hitRegPlus.Parent = mainFrame
+
+local generateHitRegBtn = Instance.new("TextButton")
+generateHitRegBtn.Size = UDim2.new(0, 70, 0, 26)
+generateHitRegBtn.Position = UDim2.new(0, 84, 0, 316)
+generateHitRegBtn.BackgroundColor3 = Color3.fromRGB(160, 70, 30)
+generateHitRegBtn.Text = "HITREG"
+generateHitRegBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+generateHitRegBtn.TextSize = 11
+generateHitRegBtn.Font = Enum.Font.GothamBold
+generateHitRegBtn.BorderSizePixel = 0
+generateHitRegBtn.Parent = mainFrame
+
+local hitRegCorner1 = Instance.new("UICorner")
+hitRegCorner1.CornerRadius = UDim.new(0, 6)
+hitRegCorner1.Parent = hitRegMinus
+local hitRegCorner2 = Instance.new("UICorner")
+hitRegCorner2.CornerRadius = UDim.new(0, 6)
+hitRegCorner2.Parent = hitRegPlus
+local generateHitRegCorner = Instance.new("UICorner")
+generateHitRegCorner.CornerRadius = UDim.new(0, 6)
+generateHitRegCorner.Parent = generateHitRegBtn
+
 -- ===== LOCK =====
 local lockBtn = Instance.new("TextButton")
 lockBtn.Size = UDim2.new(1, -16, 0, 30)
-lockBtn.Position = UDim2.new(0, 8, 0, 352)
+lockBtn.Position = UDim2.new(0, 8, 0, 350)
 lockBtn.BackgroundColor3 = Color3.fromRGB(90, 90, 100)
 lockBtn.Text = "LOCK: OFF"
 lockBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -491,29 +486,29 @@ dashFloatStroke.Thickness = 1.5
 dashFloatStroke.Transparency = 0.3
 dashFloatStroke.Parent = dashFloatBtn
 
--- ==================== BOTÓN HITBOX FLOTANTE ====================
-local hitboxFloatBtn = Instance.new("TextButton")
-hitboxFloatBtn.Name = "HitboxButton"
-hitboxFloatBtn.Size = UDim2.new(0, hitboxBtnSize, 0, hitboxBtnSize)
-hitboxFloatBtn.Position = UDim2.new(0.72, 0, 0.42, 0)
-hitboxFloatBtn.BackgroundColor3 = Color3.fromRGB(180, 80, 40)
-hitboxFloatBtn.Text = "HITBOX"
-hitboxFloatBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-hitboxFloatBtn.TextSize = 12
-hitboxFloatBtn.Font = Enum.Font.GothamBold
-hitboxFloatBtn.BorderSizePixel = 0
-hitboxFloatBtn.Visible = false
-hitboxFloatBtn.Parent = screenGui
+-- ==================== BOTÓN HIT REG FLOTANTE ====================
+local hitRegFloatBtn = Instance.new("TextButton")
+hitRegFloatBtn.Name = "HitRegButton"
+hitRegFloatBtn.Size = UDim2.new(0, hitRegBtnSize, 0, hitRegBtnSize)
+hitRegFloatBtn.Position = UDim2.new(0.72, 0, 0.42, 0)
+hitRegFloatBtn.BackgroundColor3 = Color3.fromRGB(160, 70, 30)
+hitRegFloatBtn.Text = "HITREG"
+hitRegFloatBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+hitRegFloatBtn.TextSize = 11
+hitRegFloatBtn.Font = Enum.Font.GothamBold
+hitRegFloatBtn.BorderSizePixel = 0
+hitRegFloatBtn.Visible = false
+hitRegFloatBtn.Parent = screenGui
 
-local hitboxFloatCorner = Instance.new("UICorner")
-hitboxFloatCorner.CornerRadius = UDim.new(1, 0)
-hitboxFloatCorner.Parent = hitboxFloatBtn
+local hitRegFloatCorner = Instance.new("UICorner")
+hitRegFloatCorner.CornerRadius = UDim.new(1, 0)
+hitRegFloatCorner.Parent = hitRegFloatBtn
 
-local hitboxFloatStroke = Instance.new("UIStroke")
-hitboxFloatStroke.Color = Color3.fromRGB(0, 0, 0)
-hitboxFloatStroke.Thickness = 1.5
-hitboxFloatStroke.Transparency = 0.3
-hitboxFloatStroke.Parent = hitboxFloatBtn
+local hitRegFloatStroke = Instance.new("UIStroke")
+hitRegFloatStroke.Color = Color3.fromRGB(0, 0, 0)
+hitRegFloatStroke.Thickness = 1.5
+hitRegFloatStroke.Transparency = 0.3
+hitRegFloatStroke.Parent = hitRegFloatBtn
 
 -- ==================== ARRASTRE ====================
 local function makeDraggable(guiObject, isFloating)
@@ -550,7 +545,7 @@ makeDraggable(mainFrame, false)
 makeDraggable(miniBtn, false)
 makeDraggable(jumpBtn, true)
 makeDraggable(dashFloatBtn, true)
-makeDraggable(hitboxFloatBtn, true)
+makeDraggable(hitRegFloatBtn, true)
 
 -- ==================== LÓGICA ====================
 local function updateToggleVisual()
@@ -573,4 +568,138 @@ end
 
 local function updateJumpSize()
 	jumpBtn.Size = UDim2.new(0, jumpBtnSize, 0, jumpBtnSize)
-	jumpSizeLabel.Text = "J
+	jumpSizeLabel.Text = "Jump Size: " .. jumpBtnSize
+end
+
+local function updateDashSize()
+	dashFloatBtn.Size = UDim2.new(0, dashBtnSize, 0, dashBtnSize)
+	dashSizeLabel.Text = "Dash Size: " .. dashBtnSize
+end
+
+toggleBtn.MouseButton1Click:Connect(function()
+	setEnabled(not enabled)
+end)
+
+minBtn.MouseButton1Click:Connect(function()
+	minimized = true
+	mainFrame.Visible = false
+	miniBtn.Visible = true
+	miniBtn.Position = mainFrame.Position
+end)
+
+miniBtn.MouseButton1Click:Connect(function()
+	minimized = false
+	miniBtn.Visible = false
+	mainFrame.Visible = true
+	mainFrame.Position = miniBtn.Position
+end)
+
+jumpMinus.MouseButton1Click:Connect(function()
+	jumpPower = math.max(10, jumpPower - 5)
+	jumpLabel.Text = "Jump Power: " .. jumpPower
+end)
+
+jumpPlus.MouseButton1Click:Connect(function()
+	jumpPower = math.min(150, jumpPower + 5)
+	jumpLabel.Text = "Jump Power: " .. jumpPower
+end)
+
+dashMinus.MouseButton1Click:Connect(function()
+	dashForce = math.max(10, dashForce - 5)
+	dashLabel.Text = "Dash Force: " .. dashForce
+end)
+
+dashPlus.MouseButton1Click:Connect(function()
+	dashForce = math.min(150, dashForce + 5)
+	dashLabel.Text = "Dash Force: " .. dashForce
+end)
+
+hitRegMinus.MouseButton1Click:Connect(function()
+	hitReg = math.max(1, hitReg - 1)
+	hitRegLabel.Text = "Hit Reg Fix: " .. hitReg
+end)
+
+hitRegPlus.MouseButton1Click:Connect(function()
+	hitReg = math.min(1000, hitReg + 1)
+	hitRegLabel.Text = "Hit Reg Fix: " .. hitReg
+end)
+
+jumpSizeMinus.MouseButton1Click:Connect(function()
+	jumpBtnSize = math.max(1, jumpBtnSize - 2)
+	updateJumpSize()
+end)
+
+jumpSizePlus.MouseButton1Click:Connect(function()
+	jumpBtnSize = math.min(100, jumpBtnSize + 2)
+	updateJumpSize()
+end)
+
+dashSizeMinus.MouseButton1Click:Connect(function()
+	dashBtnSize = math.max(1, dashBtnSize - 2)
+	updateDashSize()
+end)
+
+dashSizePlus.MouseButton1Click:Connect(function()
+	dashBtnSize = math.min(100, dashBtnSize + 2)
+	updateDashSize()
+end)
+
+generateJumpBtn.MouseButton1Click:Connect(function()
+	jumpBtn.Visible = not jumpBtn.Visible
+end)
+
+generateDashBtn.MouseButton1Click:Connect(function()
+	dashFloatBtn.Visible = not dashFloatBtn.Visible
+end)
+
+generateHitRegBtn.MouseButton1Click:Connect(function()
+	hitRegFloatBtn.Visible = not hitRegFloatBtn.Visible
+end)
+
+lockBtn.MouseButton1Click:Connect(function()
+	locked = not locked
+	if locked then
+		lockBtn.Text = "LOCK: ON"
+		lockBtn.BackgroundColor3 = Color3.fromRGB(180, 60, 60)
+	else
+		lockBtn.Text = "LOCK: OFF"
+		lockBtn.BackgroundColor3 = Color3.fromRGB(90, 90, 100)
+	end
+end)
+
+jumpBtn.MouseButton1Click:Connect(function()
+	jump()
+end)
+
+dashFloatBtn.MouseButton1Click:Connect(function()
+	dash()
+end)
+
+hitRegFloatBtn.MouseButton1Click:Connect(function()
+	applyHitReg()
+end)
+
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then return end
+	if input.KeyCode == Enum.KeyCode.X then
+		setEnabled(not enabled)
+	elseif input.KeyCode == Enum.KeyCode.Z then
+		setEnabled(false)
+	elseif input.KeyCode == Enum.KeyCode.Space and enabled then
+		jump()
+	elseif input.KeyCode == Enum.KeyCode.Q then
+		dash()
+	end
+end)
+
+RunService.Heartbeat:Connect(function()
+	if not enabled or not humanoid or not jumping then return end
+	local state = humanoid:GetState()
+	if state == Enum.HumanoidStateType.FallingDown
+		or state == Enum.HumanoidStateType.GettingUp
+		or state == Enum.HumanoidStateType.Stunned then
+		jump()
+	end
+end)
+
+print("Anti-Stun Mobile + Hit Reg Fix cargado")
