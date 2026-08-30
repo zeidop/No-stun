@@ -11,9 +11,8 @@ local jumping = true
 local jumpPower = 50
 local dashForce = 60
 local minimized = false
-local locked = false          -- Bloqueo de botones flotantes
+local locked = false
 
--- Tamaños de los botones flotantes (1-100)
 local jumpBtnSize = 62
 local dashBtnSize = 62
 
@@ -60,8 +59,8 @@ screenGui.Parent = playerGui
 -- Frame principal
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 160, 0, 310)
-mainFrame.Position = UDim2.new(0.03, 0, 0.25, 0)
+mainFrame.Size = UDim2.new(0, 170, 0, 320)
+mainFrame.Position = UDim2.new(0.03, 0, 0.22, 0)
 mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
@@ -103,7 +102,7 @@ local minCorner = Instance.new("UICorner")
 minCorner.CornerRadius = UDim.new(0, 6)
 minCorner.Parent = minBtn
 
--- Botón Toggle Anti-Stun
+-- Botón Toggle
 local toggleBtn = Instance.new("TextButton")
 toggleBtn.Size = UDim2.new(1, -16, 0, 34)
 toggleBtn.Position = UDim2.new(0, 8, 0, 36)
@@ -119,7 +118,7 @@ local toggleCorner = Instance.new("UICorner")
 toggleCorner.CornerRadius = UDim.new(0, 8)
 toggleCorner.Parent = toggleBtn
 
--- ===== Jump Power =====
+-- ===== JUMP POWER + GENERADOR =====
 local jumpLabel = Instance.new("TextLabel")
 jumpLabel.Size = UDim2.new(1, -16, 0, 18)
 jumpLabel.Position = UDim2.new(0, 8, 0, 78)
@@ -144,7 +143,7 @@ jumpMinus.Parent = mainFrame
 
 local jumpPlus = Instance.new("TextButton")
 jumpPlus.Size = UDim2.new(0, 32, 0, 26)
-jumpPlus.Position = UDim2.new(0, 48, 0, 98)
+jumpPlus.Position = UDim2.new(0, 44, 0, 98)
 jumpPlus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 jumpPlus.Text = "+"
 jumpPlus.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -153,14 +152,28 @@ jumpPlus.Font = Enum.Font.GothamBold
 jumpPlus.BorderSizePixel = 0
 jumpPlus.Parent = mainFrame
 
+local generateJumpBtn = Instance.new("TextButton")
+generateJumpBtn.Size = UDim2.new(0, 70, 0, 26)
+generateJumpBtn.Position = UDim2.new(0, 84, 0, 98)
+generateJumpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+generateJumpBtn.Text = "JUMP"
+generateJumpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+generateJumpBtn.TextSize = 12
+generateJumpBtn.Font = Enum.Font.GothamBold
+generateJumpBtn.BorderSizePixel = 0
+generateJumpBtn.Parent = mainFrame
+
 local jumpCorner1 = Instance.new("UICorner")
 jumpCorner1.CornerRadius = UDim.new(0, 6)
 jumpCorner1.Parent = jumpMinus
 local jumpCorner2 = Instance.new("UICorner")
 jumpCorner2.CornerRadius = UDim.new(0, 6)
 jumpCorner2.Parent = jumpPlus
+local generateJumpCorner = Instance.new("UICorner")
+generateJumpCorner.CornerRadius = UDim.new(0, 6)
+generateJumpCorner.Parent = generateJumpBtn
 
--- ===== Dash Force =====
+-- ===== DASH FORCE + GENERADOR =====
 local dashLabel = Instance.new("TextLabel")
 dashLabel.Size = UDim2.new(1, -16, 0, 18)
 dashLabel.Position = UDim2.new(0, 8, 0, 132)
@@ -185,7 +198,7 @@ dashMinus.Parent = mainFrame
 
 local dashPlus = Instance.new("TextButton")
 dashPlus.Size = UDim2.new(0, 32, 0, 26)
-dashPlus.Position = UDim2.new(0, 48, 0, 152)
+dashPlus.Position = UDim2.new(0, 44, 0, 152)
 dashPlus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 dashPlus.Text = "+"
 dashPlus.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -194,17 +207,31 @@ dashPlus.Font = Enum.Font.GothamBold
 dashPlus.BorderSizePixel = 0
 dashPlus.Parent = mainFrame
 
+local generateDashBtn = Instance.new("TextButton")
+generateDashBtn.Size = UDim2.new(0, 70, 0, 26)
+generateDashBtn.Position = UDim2.new(0, 84, 0, 152)
+generateDashBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 220)
+generateDashBtn.Text = "DASH"
+generateDashBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+generateDashBtn.TextSize = 12
+generateDashBtn.Font = Enum.Font.GothamBold
+generateDashBtn.BorderSizePixel = 0
+generateDashBtn.Parent = mainFrame
+
 local dashCorner1 = Instance.new("UICorner")
 dashCorner1.CornerRadius = UDim.new(0, 6)
 dashCorner1.Parent = dashMinus
 local dashCorner2 = Instance.new("UICorner")
 dashCorner2.CornerRadius = UDim.new(0, 6)
 dashCorner2.Parent = dashPlus
+local generateDashCorner = Instance.new("UICorner")
+generateDashCorner.CornerRadius = UDim.new(0, 6)
+generateDashCorner.Parent = generateDashBtn
 
--- ===== Tamaño JUMP =====
+-- ===== JUMP SIZE =====
 local jumpSizeLabel = Instance.new("TextLabel")
 jumpSizeLabel.Size = UDim2.new(1, -16, 0, 18)
-jumpSizeLabel.Position = UDim2.new(0, 8, 0, 186)
+jumpSizeLabel.Position = UDim2.new(0, 8, 0, 188)
 jumpSizeLabel.BackgroundTransparency = 1
 jumpSizeLabel.Text = "Jump Size: 62"
 jumpSizeLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
@@ -215,7 +242,7 @@ jumpSizeLabel.Parent = mainFrame
 
 local jumpSizeMinus = Instance.new("TextButton")
 jumpSizeMinus.Size = UDim2.new(0, 32, 0, 26)
-jumpSizeMinus.Position = UDim2.new(0, 8, 0, 206)
+jumpSizeMinus.Position = UDim2.new(0, 8, 0, 208)
 jumpSizeMinus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 jumpSizeMinus.Text = "-"
 jumpSizeMinus.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -226,7 +253,7 @@ jumpSizeMinus.Parent = mainFrame
 
 local jumpSizePlus = Instance.new("TextButton")
 jumpSizePlus.Size = UDim2.new(0, 32, 0, 26)
-jumpSizePlus.Position = UDim2.new(0, 48, 0, 206)
+jumpSizePlus.Position = UDim2.new(0, 44, 0, 208)
 jumpSizePlus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 jumpSizePlus.Text = "+"
 jumpSizePlus.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -242,10 +269,10 @@ local jumpSizeCorner2 = Instance.new("UICorner")
 jumpSizeCorner2.CornerRadius = UDim.new(0, 6)
 jumpSizeCorner2.Parent = jumpSizePlus
 
--- ===== Tamaño DASH =====
+-- ===== DASH SIZE =====
 local dashSizeLabel = Instance.new("TextLabel")
 dashSizeLabel.Size = UDim2.new(1, -16, 0, 18)
-dashSizeLabel.Position = UDim2.new(0, 8, 0, 238)
+dashSizeLabel.Position = UDim2.new(0, 8, 0, 242)
 dashSizeLabel.BackgroundTransparency = 1
 dashSizeLabel.Text = "Dash Size: 62"
 dashSizeLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
@@ -256,7 +283,7 @@ dashSizeLabel.Parent = mainFrame
 
 local dashSizeMinus = Instance.new("TextButton")
 dashSizeMinus.Size = UDim2.new(0, 32, 0, 26)
-dashSizeMinus.Position = UDim2.new(0, 8, 0, 258)
+dashSizeMinus.Position = UDim2.new(0, 8, 0, 262)
 dashSizeMinus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 dashSizeMinus.Text = "-"
 dashSizeMinus.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -267,7 +294,7 @@ dashSizeMinus.Parent = mainFrame
 
 local dashSizePlus = Instance.new("TextButton")
 dashSizePlus.Size = UDim2.new(0, 32, 0, 26)
-dashSizePlus.Position = UDim2.new(0, 48, 0, 258)
+dashSizePlus.Position = UDim2.new(0, 44, 0, 262)
 dashSizePlus.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
 dashSizePlus.Text = "+"
 dashSizePlus.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -283,41 +310,10 @@ local dashSizeCorner2 = Instance.new("UICorner")
 dashSizeCorner2.CornerRadius = UDim.new(0, 6)
 dashSizeCorner2.Parent = dashSizePlus
 
--- ===== Botones para GENERAR los flotantes =====
-local generateJumpBtn = Instance.new("TextButton")
-generateJumpBtn.Size = UDim2.new(0, 64, 0, 26)
-generateJumpBtn.Position = UDim2.new(0, 8, 0, 188)
-generateJumpBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
-generateJumpBtn.Text = "JUMP"
-generateJumpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-generateJumpBtn.TextSize = 12
-generateJumpBtn.Font = Enum.Font.GothamBold
-generateJumpBtn.BorderSizePixel = 0
-generateJumpBtn.Parent = mainFrame
-
-local generateJumpCorner = Instance.new("UICorner")
-generateJumpCorner.CornerRadius = UDim.new(0, 6)
-generateJumpCorner.Parent = generateJumpBtn
-
-local generateDashBtn = Instance.new("TextButton")
-generateDashBtn.Size = UDim2.new(0, 64, 0, 26)
-generateDashBtn.Position = UDim2.new(0, 88, 0, 188)
-generateDashBtn.BackgroundColor3 = Color3.fromRGB(70, 130, 220)
-generateDashBtn.Text = "DASH"
-generateDashBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-generateDashBtn.TextSize = 12
-generateDashBtn.Font = Enum.Font.GothamBold
-generateDashBtn.BorderSizePixel = 0
-generateDashBtn.Parent = mainFrame
-
-local generateDashCorner = Instance.new("UICorner")
-generateDashCorner.CornerRadius = UDim.new(0, 6)
-generateDashCorner.Parent = generateDashBtn
-
--- ===== Botón de BLOQUEO =====
+-- ===== LOCK =====
 local lockBtn = Instance.new("TextButton")
-lockBtn.Size = UDim2.new(1, -16, 0, 28)
-lockBtn.Position = UDim2.new(0, 8, 0, 290)
+lockBtn.Size = UDim2.new(1, -16, 0, 30)
+lockBtn.Position = UDim2.new(0, 8, 0, 298)
 lockBtn.BackgroundColor3 = Color3.fromRGB(90, 90, 100)
 lockBtn.Text = "LOCK: OFF"
 lockBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -334,7 +330,7 @@ lockCorner.Parent = lockBtn
 local miniBtn = Instance.new("TextButton")
 miniBtn.Name = "MiniButton"
 miniBtn.Size = UDim2.new(0, 48, 0, 48)
-miniBtn.Position = UDim2.new(0.03, 0, 0.25, 0)
+miniBtn.Position = UDim2.new(0.03, 0, 0.22, 0)
 miniBtn.BackgroundColor3 = Color3.fromRGB(200, 55, 55)
 miniBtn.Text = "AS"
 miniBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -407,7 +403,7 @@ local function makeDraggable(guiObject, isFloating)
 	local dragStart, startPos
 
 	guiObject.InputBegan:Connect(function(input)
-		if locked and isFloating then return end -- Bloqueo activo
+		if locked and isFloating then return end
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
 			dragStart = input.Position
@@ -581,4 +577,4 @@ RunService.Heartbeat:Connect(function()
 	end
 end)
 
-print("Anti-Stun Mobile + Size + Lock cargado")
+print("Anti-Stun Mobile - Layout corregido")
